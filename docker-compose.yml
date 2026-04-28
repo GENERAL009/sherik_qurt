@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=qurt_db
+      - POSTGRES_USER=qurt_user
+      - POSTGRES_PASSWORD=qurt_password
+    ports:
+      - "5432:5432"
+
+  web:
+    build: ./backend
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      # Note: We are using SQLite locally for simplicity now, but you can switch to Postgres by uncommenting these
+      # - DB_ENGINE=django.db.backends.postgresql
+      # - DB_NAME=qurt_db
+      # - DB_USER=qurt_user
+      # - DB_PASSWORD=qurt_password
+      # - DB_HOST=db
+      # - DB_PORT=5432
+    # depends_on:
+    #   - db
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
