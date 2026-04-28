@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/', // Change for production
+  baseURL: 'http://178.105.71.147:8000/api/', // Updated for the server IP
 });
 
 // We can add interceptors here later to handle JWT tokens

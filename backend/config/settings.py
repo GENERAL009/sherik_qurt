@@ -27,6 +27,9 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ["178.105.71.147", "0.0.0.0"]
+=======
+ALLOWED_HOSTS = ['178.105.71.147', 'localhost', '127.0.0.1']
+>>>>>>> 6d276f8e9dd50120c2c219200b39afaaf5c9c0a0
 
 
 # Application definition
