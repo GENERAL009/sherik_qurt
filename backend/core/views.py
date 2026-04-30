@@ -113,10 +113,31 @@ def scan_out(request):
     Transaction.objects.create(
         product=product,
         type='OUT',
-        quantity=quantity
+        quantity=quantity,
+        price_at_transaction=product.price,
+        comment=request.data.get('comment', '')
     )
     
     return Response({
         "message": "Muvaffaqiyatli sotildi",
         "product": ProductSerializer(product).data
     }, status=status.HTTP_200_OK)
+
+class WithdrawalViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Transaction.objects.filter(type='OUT').order_by('-created_at')
+    serializer_class = TransactionSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        
+        # Calculate total sum of all withdrawals
+        total_sum = queryset.aggregate(
+            total=Sum(F('quantity') * F('price_at_transaction'))
+        )['total'] or 0
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "results": serializer.data,
+            "total_sum": total_sum
+        })
+

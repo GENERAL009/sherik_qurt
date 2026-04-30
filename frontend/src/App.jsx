@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import ScanPage from './pages/ScanPage';
 import ProductDetail from './pages/ProductDetail';
+import WithdrawalsPage from './pages/WithdrawalsPage';
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="scan" element={<ScanPage />} />
           <Route path="product/:id" element={<ProductDetail />} />
+          <Route path="withdrawals" element={<WithdrawalsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
+
   );
 }
 

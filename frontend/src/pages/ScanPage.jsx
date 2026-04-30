@@ -10,6 +10,8 @@ export default function ScanPage() {
   const [quantity, setQuantity] = useState(1);
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: '' }
   const [loading, setLoading] = useState(false);
+  const [comment, setComment] = useState('');
+
   
   const scannerRef = useRef(null);
 
@@ -65,7 +67,8 @@ export default function ScanPage() {
       const endpoint = type === 'IN' ? 'scan/in/' : 'scan/out/';
       const response = await api.post(endpoint, {
         barcode,
-        quantity: parseInt(quantity)
+        quantity: parseInt(quantity),
+        comment: type === 'OUT' ? comment : ''
       });
       
       setStatus({ 
@@ -74,6 +77,8 @@ export default function ScanPage() {
       });
       setBarcode('');
       setQuantity(1);
+      setComment('');
+
     } catch (error) {
       const msg = error.response?.data?.error || 'Xatolik yuz berdi';
       setStatus({ type: 'error', message: msg });
@@ -140,7 +145,21 @@ export default function ScanPage() {
             </div>
           </div>
 
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Izoh (Faqat Chiqim uchun)</label>
+            <input 
+              type="text" 
+              className="input-base" 
+              placeholder="Masalan: Abdulazizga" 
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              style={{ fontSize: '1.1rem' }}
+            />
+          </div>
+
+
           <div style={{ display: 'flex', gap: '16px', marginTop: 'auto' }}>
+
             <button 
               className="btn" 
               style={{ flex: 1, backgroundColor: 'var(--success-color)', color: 'white', display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px' }}

@@ -24,15 +24,6 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=1
-      # Note: We are using SQLite locally for simplicity now, but you can switch to Postgres by uncommenting these
-      # - DB_ENGINE=django.db.backends.postgresql
-      # - DB_NAME=qurt_db
-      # - DB_USER=qurt_user
-      # - DB_PASSWORD=qurt_password
-      # - DB_HOST=db
-      # - DB_PORT=5432
-    # depends_on:
-    #   - db
 
   frontend:
     build: ./frontend
@@ -48,3 +39,6 @@ services:
 
 volumes:
   postgres_data:
+
+
+

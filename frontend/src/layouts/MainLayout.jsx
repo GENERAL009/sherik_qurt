@@ -7,7 +7,9 @@ export default function MainLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Skaner', path: '/scan', icon: ScanLine },
+    { name: 'Chiqimlar', path: '/withdrawals', icon: Package },
   ];
+
 
   return (
     <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

@@ -50,10 +50,10 @@ export default function Dashboard() {
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.barcode.includes(search);
     const matchesFilter = activeFilter === 'Hamma' ? true : 
-                          activeFilter === 'Muddati yaqin' ? (p.created_at && new Date(p.created_at) < new Date(Date.now() - 30*24*60*60*1000)) : 
                           p.type === activeFilter;
     return matchesSearch && matchesFilter;
   });
+
 
   return (
     <div>
@@ -138,23 +138,8 @@ export default function Dashboard() {
           );
         })}
 
-        {/* Expiry Alert Filter */}
-        <div 
-          onClick={() => setActiveFilter('Muddati yaqin')}
-          className="glass-panel card-hover" 
-          style={{ minWidth: '160px', padding: '16px', cursor: 'pointer', border: activeFilter === 'Muddati yaqin' ? '2px solid var(--danger-color)' : '1px solid var(--border-color)' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: activeFilter === 'Muddati yaqin' ? 'var(--danger-color)' : 'var(--text-secondary)' }}>
-            <CalendarClock size={20} />
-            <span style={{ fontWeight: 600 }}>Eski tovarlar</span>
-          </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--danger-color)' }}>
-            {products.filter(p => p.created_at && new Date(p.created_at) < new Date(Date.now() - 30*24*60*60*1000)).length}
-          </div>
-          <div className="text-subtle" style={{ fontSize: '0.8rem' }}>1 oydan o'tgan</div>
-        </div>
-
       </div>
+
 
       {/* Product Grid */}
       {loading ? (
@@ -181,12 +166,8 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <p className="text-subtle" style={{ marginTop: '4px' }}>{product.type} • {product.weight}</p>
-                {product.expiry_date && (
-                  <p className="text-subtle" style={{ fontSize: '0.8rem', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px', color: new Date(product.expiry_date) < new Date(Date.now() + 30*24*60*60*1000) ? 'var(--danger-color)' : 'var(--text-secondary)' }}>
-                    <CalendarClock size={14} /> Muddati: {formatDate(product.expiry_date)}
-                  </p>
-                )}
               </div>
+
               
               <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>

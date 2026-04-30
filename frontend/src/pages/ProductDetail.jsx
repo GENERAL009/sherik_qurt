@@ -11,9 +11,8 @@ export default function ProductDetail() {
     name: '',
     type: '',
     barcode: '',
-    production_date: '',
-    expiry_date: '',
     quantity: 0,
+
     weight: '',
     price: 0
   });
@@ -200,40 +199,9 @@ export default function ProductDetail() {
                 />
               </div>
             </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                Sana (Dan - Gacha)
-              </label>
-              <div className="flex-gap-2">
-                <div style={{ position: 'relative', flex: 1 }}>
-                  <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                  <input 
-                    type="date" 
-                    name="production_date"
-                    className="input-base" 
-                    title="Ishlab chiqarilgan sana (Dan)"
-                    style={{ paddingLeft: '34px', fontSize: '0.9rem' }}
-                    value={product.production_date || ''}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div style={{ position: 'relative', flex: 1 }}>
-                  <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                  <input 
-                    type="date" 
-                    name="expiry_date"
-                    className="input-base" 
-                    title="Yaroqlilik muddati (Gacha)"
-                    style={{ paddingLeft: '34px', fontSize: '0.9rem' }}
-                    value={product.expiry_date || ''}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
             
             <div style={{ gridColumn: '1 / -1' }}>
+
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
                 Soni (Mavjud miqdor: {product.quantity})
               </label>
