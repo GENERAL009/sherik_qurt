@@ -1,8 +1,19 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Package, ScanLine, LayoutDashboard } from 'lucide-react';
+import { Package, ScanLine, LayoutDashboard, X, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function MainLayout() {
   const location = useLocation();
+  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
+
+  useEffect(() => {
+    const handleNotify = (event) => {
+      setToast(event.detail);
+      setTimeout(() => setToast(null), 3000);
+    };
+    window.addEventListener('app-notify', handleNotify);
+    return () => window.removeEventListener('app-notify', handleNotify);
+  }, []);
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -10,14 +21,40 @@ export default function MainLayout() {
     { name: 'Chiqimlar', path: '/withdrawals', icon: Package },
   ];
 
-
   return (
     <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Global Toast */}
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 100,
+          background: toast.type === 'success' ? 'var(--success-color)' : 'var(--danger-color)',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          {toast.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+          <span style={{ fontWeight: 600 }}>{toast.message}</span>
+          <button onClick={() => setToast(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}>
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
       <header className="glass-panel" style={{ 
         position: 'sticky', top: 0, zIndex: 10, 
         borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderRadius: 0,
         padding: '0'
       }}>
+
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'var(--nav-height)' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
             <Package size={24} />

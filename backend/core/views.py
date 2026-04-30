@@ -123,7 +123,8 @@ def scan_out(request):
         "product": ProductSerializer(product).data
     }, status=status.HTTP_200_OK)
 
-class WithdrawalViewSet(viewsets.ReadOnlyModelViewSet):
+class WithdrawalViewSet(viewsets.ModelViewSet):
+
     queryset = Transaction.objects.filter(type='OUT').order_by('-created_at')
     serializer_class = TransactionSerializer
 

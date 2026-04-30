@@ -40,6 +40,23 @@ export default function WithdrawalsPage() {
     });
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Ushbu chiqim (qarz) to'langanini tasdiqlaysizmi? Bu yozuv o'chirib yuboriladi.")) {
+      try {
+        await api.delete(`withdrawals/${id}/`);
+        window.dispatchEvent(new CustomEvent('app-notify', { 
+          detail: { message: "Qarz to'landi va o'chirildi", type: 'success' } 
+        }));
+        fetchWithdrawals();
+      } catch (error) {
+        console.error('Error deleting withdrawal', error);
+        window.dispatchEvent(new CustomEvent('app-notify', { 
+          detail: { message: "O'chirishda xatolik yuz berdi", type: 'error' } 
+        }));
+      }
+    }
+  };
+
   const filteredWithdrawals = withdrawals.filter(w => 
     (w.comment && w.comment.toLowerCase().includes(search.toLowerCase())) ||
     (w.product_name && w.product_name.toLowerCase().includes(search.toLowerCase()))
@@ -117,18 +134,29 @@ export default function WithdrawalsPage() {
                 </div>
               </div>
 
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--danger-color)' }}>
-                  -{ (item.quantity * (item.price_at_transaction || 0)).toLocaleString('uz-UZ') } UZS
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--danger-color)' }}>
+                    -{ (item.quantity * (item.price_at_transaction || 0)).toLocaleString('uz-UZ') } UZS
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    {item.quantity} dona × {Number(item.price_at_transaction || 0).toLocaleString('uz-UZ')} UZS
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                  {item.quantity} dona × {Number(item.price_at_transaction || 0).toLocaleString('uz-UZ')} UZS
-                </div>
+                
+                <button 
+                  className="btn btn-outline" 
+                  onClick={() => handleDelete(item.id)}
+                  style={{ borderColor: 'var(--success-color)', color: 'var(--success-color)', padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  To'landi
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
+
     </div>
   );
 }

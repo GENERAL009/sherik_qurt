@@ -71,21 +71,26 @@ export default function ScanPage() {
         comment: type === 'OUT' ? comment : ''
       });
       
-      setStatus({ 
-        type: 'success', 
-        message: `${response.data.message}. Hozirgi qoldiq: ${response.data.product.quantity} dona` 
-      });
+      const msg = `${response.data.message}. Qoldiq: ${response.data.product.quantity} dona`;
+      window.dispatchEvent(new CustomEvent('app-notify', { 
+        detail: { message: msg, type: 'success' } 
+      }));
+
+      setStatus({ type: 'success', message: msg });
       setBarcode('');
       setQuantity(1);
       setComment('');
-
     } catch (error) {
-      const msg = error.response?.data?.error || 'Xatolik yuz berdi';
-      setStatus({ type: 'error', message: msg });
+      const errorMsg = error.response?.data?.error || 'Xatolik yuz berdi';
+      window.dispatchEvent(new CustomEvent('app-notify', { 
+        detail: { message: errorMsg, type: 'error' } 
+      }));
+      setStatus({ type: 'error', message: errorMsg });
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
