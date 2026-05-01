@@ -10,8 +10,14 @@ export default function WithdrawalsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     fetchWithdrawals();
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
   const fetchWithdrawals = async () => {
@@ -41,6 +47,7 @@ export default function WithdrawalsPage() {
   };
 
   const handleDelete = async (id) => {
+    if (!user?.is_admin) return;
     if (window.confirm("Ushbu chiqim (qarz) to'langanini tasdiqlaysizmi? Bu yozuv o'chirib yuboriladi.")) {
       try {
         await api.delete(`withdrawals/${id}/`);
@@ -63,7 +70,7 @@ export default function WithdrawalsPage() {
   );
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="withdrawals-page" style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <div className="flex-header" style={{ marginBottom: '32px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button className="btn btn-outline" onClick={() => navigate(-1)} style={{ padding: '8px' }}>
@@ -86,12 +93,14 @@ export default function WithdrawalsPage() {
       </div>
 
       {/* Summary Box */}
-      <div className="glass-panel" style={{ 
+      <div className="glass-panel summary-box" style={{ 
         padding: '24px', 
         marginBottom: '32px', 
         display: 'flex', 
+        flexWrap: 'wrap',
         alignItems: 'center', 
         justifyContent: 'space-between',
+        gap: '20px',
         background: 'linear-gradient(135deg, rgba(255, 59, 48, 0.1) 0%, rgba(255, 149, 0, 0.1) 100%)',
         border: '1px solid rgba(255, 59, 48, 0.2)'
       }}>
@@ -101,10 +110,10 @@ export default function WithdrawalsPage() {
           </div>
           <div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>Jami Chiqim Summasi</p>
-            <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>{Number(totalSum).toLocaleString('uz-UZ')} <span style={{ fontSize: '1rem', fontWeight: 600 }}>UZS</span></h2>
+            <h2 className="total-sum-text" style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>{Number(totalSum).toLocaleString('uz-UZ')} <span style={{ fontSize: '1rem', fontWeight: 600 }}>UZS</span></h2>
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div className="stats-info" style={{ textAlign: 'right' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Tranzaksiyalar soni</p>
           <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>{withdrawals.length} ta</p>
         </div>
@@ -118,24 +127,32 @@ export default function WithdrawalsPage() {
           <p className="text-subtle">Chiqimlar topilmadi.</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="withdrawals-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {filteredWithdrawals.map((item) => (
-            <div key={item.id} className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderLeft: '4px solid var(--danger-color)' }}>
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px', borderRadius: '8px' }}>
+            <div key={item.id} className="glass-panel withdrawal-card" style={{ 
+                padding: '20px', 
+                display: 'flex', 
+                flexWrap: 'wrap',
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                gap: '16px',
+                borderLeft: '4px solid var(--danger-color)' 
+            }}>
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center', minWidth: '250px', flex: 1 }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px', borderRadius: '8px', flexShrink: 0 }}>
                    <Package size={24} style={{ color: 'var(--text-secondary)' }} />
                 </div>
                 <div>
                   <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>{item.product_name || `Mahsulot #${item.product}`}</h4>
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> {formatDate(item.created_at)}</span>
                     {item.comment && <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-color)', fontWeight: 500 }}><MessageSquare size={14} /> {item.comment}</span>}
                   </div>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                <div style={{ textAlign: 'right' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flex: 1, minWidth: '200px' }}>
+                <div style={{ textAlign: 'right', flex: 1 }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--danger-color)' }}>
                     -{ (item.quantity * (item.price_at_transaction || 0)).toLocaleString('uz-UZ') } UZS
                   </div>
@@ -144,19 +161,42 @@ export default function WithdrawalsPage() {
                   </div>
                 </div>
                 
-                <button 
-                  className="btn btn-outline" 
-                  onClick={() => handleDelete(item.id)}
-                  style={{ borderColor: 'var(--success-color)', color: 'var(--success-color)', padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  To'landi
-                </button>
+                {user?.is_admin && (
+                  <button 
+                    className="btn btn-outline" 
+                    onClick={() => handleDelete(item.id)}
+                    style={{ borderColor: 'var(--success-color)', color: 'var(--success-color)', padding: '6px 12px', fontSize: '0.85rem', flexShrink: 0 }}
+                  >
+                    To'landi
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 600px) {
+            .summary-box {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            .stats-info {
+                text-align: left !important;
+            }
+            .withdrawal-card {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            .withdrawal-card > div {
+                min-width: 100% !important;
+            }
+            .total-sum-text {
+                font-size: 1.5rem !important;
+            }
+        }
+      `}} />
     </div>
   );
 }

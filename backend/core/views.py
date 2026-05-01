@@ -12,9 +12,10 @@ from .serializers import ProductSerializer, TransactionSerializer
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-id')
     serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated] # Disable for easy testing first
+    permission_classes = [IsAuthenticated]
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def dashboard_stats(request):
     now = timezone.now()
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -42,7 +43,7 @@ def dashboard_stats(request):
     }, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def scan_in(request):
     barcode = request.data.get('barcode')
     quantity = request.data.get('quantity', 1)
@@ -84,7 +85,7 @@ def scan_in(request):
 
 
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def scan_out(request):
     barcode = request.data.get('barcode')
     quantity = request.data.get('quantity', 1)
@@ -123,10 +124,11 @@ def scan_out(request):
         "product": ProductSerializer(product).data
     }, status=status.HTTP_200_OK)
 
-class WithdrawalViewSet(viewsets.ModelViewSet):
 
+class WithdrawalViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.filter(type='OUT').order_by('-created_at')
     serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -141,4 +143,12 @@ class WithdrawalViewSet(viewsets.ModelViewSet):
             "results": serializer.data,
             "total_sum": total_sum
         })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_info(request):
+    return Response({
+        "username": request.user.username,
+        "is_admin": request.user.is_superuser
+    })
 

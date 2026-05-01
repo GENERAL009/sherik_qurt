@@ -23,6 +23,29 @@ export default function ScanPage() {
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
+
+    const playBeep = () => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.1);
+      } catch (e) {
+        console.error('Audio error', e);
+      }
+    };
+
     // Initialize Scanner on mount
     const scanner = new Html5QrcodeScanner(
       "reader",
@@ -38,8 +61,8 @@ export default function ScanPage() {
 
     scanner.render(
       (decodedText) => {
+        playBeep();
         setBarcode(decodedText);
-        // Play beep sound here if needed
       },
       (error) => {
         // ignore errors to avoid noise
