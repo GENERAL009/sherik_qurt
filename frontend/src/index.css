@@ -241,18 +241,18 @@ button {
 }
 
 /* Very small phones */
-@media (max-width: 480px) {
-  .nav-text {
+@media (max-width: 600px) {
+  .nav-text, .brand-text {
     display: none;
   }
   .btn {
-    padding: 0.5rem 0.75rem;
-  }
-  .brand-text {
-    font-size: 1.1rem !important;
+    padding: 0.5rem 0.6rem;
   }
   .container {
-    padding: 0 16px;
+    padding: 0 12px;
+  }
+  .header-content {
+    gap: 8px !important;
   }
 }
 @keyframes slideDown {

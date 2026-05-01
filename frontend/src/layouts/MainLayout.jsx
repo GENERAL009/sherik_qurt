@@ -79,13 +79,13 @@ export default function MainLayout() {
         padding: '0'
       }}>
 
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'var(--nav-height)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div className="container header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 'var(--nav-height)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2vw, 24px)' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
               <Package size={24} />
               <span className="brand-text" style={{ fontSize: '1.25rem' }}>Qurt Inventory</span>
             </Link>
-            <nav style={{ display: 'flex', gap: '8px' }}>
+            <nav style={{ display: 'flex', gap: '4px' }}>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -94,7 +94,8 @@ export default function MainLayout() {
                     key={item.path}
                     to={item.path}
                     className={`btn ${isActive ? 'btn-primary' : 'btn-outline'}`}
-                    style={{ border: isActive ? 'none' : '' }}
+                    style={{ border: isActive ? 'none' : '', padding: '8px 12px' }}
+                    title={item.name}
                   >
                     <Icon size={18} />
                     <span className="nav-text">{item.name}</span>
@@ -104,7 +105,7 @@ export default function MainLayout() {
             </nav>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(4px, 1vw, 12px)' }}>
              <button 
                 onClick={toggleTheme} 
                 className="btn btn-outline" 
@@ -115,13 +116,14 @@ export default function MainLayout() {
               </button>
 
             {user && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(4px, 1vw, 16px)' }}>
                 <div className="nav-text" style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user.username}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{user.is_admin ? 'Admin' : 'Ishchi'}</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{user.username}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{user.is_admin ? 'Admin' : 'Ishchi'}</div>
                 </div>
-                <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '8px 12px', fontSize: '0.85rem' }}>
-                  Chiqish
+                <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '8px', display: 'flex', alignItems: 'center', gap: '4px' }} title="Chiqish">
+                  <X size={18} />
+                  <span className="nav-text" style={{ fontSize: '0.85rem' }}>Chiqish</span>
                 </button>
               </div>
             )}
